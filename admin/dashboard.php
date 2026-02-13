@@ -71,57 +71,57 @@ $topTeams = $stmt->fetchAll();
             <?= showFlash() ?>
 
             <!-- Stats Cards Row -->
-            <div class="row g-3 mb-4">
+            <div class="row g-3 mb-4" data-aos="fade-up">
                 <div class="col-md-4 col-lg-2">
-                    <div class="card stat-card bg-gradient-primary">
+                    <div class="card stat-card bg-gradient-primary hover-lift" data-aos="zoom-in" data-aos-delay="0">
                         <div class="card-body text-center">
                             <i class="bi bi-people-fill stat-icon"></i>
-                            <div class="stat-value"><?= $stats['participants'] ?></div>
+                            <div class="stat-value" data-count="<?= (int)$stats['participants'] ?>">0</div>
                             <div class="stat-label">Participants</div>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4 col-lg-2">
-                    <div class="card stat-card bg-gradient-success">
+                    <div class="card stat-card bg-gradient-success hover-lift" data-aos="zoom-in" data-aos-delay="50">
                         <div class="card-body text-center">
                             <i class="bi bi-person-lines-fill stat-icon"></i>
-                            <div class="stat-value"><?= $stats['teams'] ?></div>
+                            <div class="stat-value" data-count="<?= (int)$stats['teams'] ?>">0</div>
                             <div class="stat-label">Teams</div>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4 col-lg-2">
-                    <div class="card stat-card bg-gradient-warning">
+                    <div class="card stat-card bg-gradient-warning hover-lift" data-aos="zoom-in" data-aos-delay="100">
                         <div class="card-body text-center">
                             <i class="bi bi-building stat-icon"></i>
-                            <div class="stat-value"><?= $stats['halls'] ?></div>
+                            <div class="stat-value" data-count="<?= (int)$stats['halls'] ?>">0</div>
                             <div class="stat-label">Halls</div>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4 col-lg-2">
-                    <div class="card stat-card bg-gradient-danger">
+                    <div class="card stat-card bg-gradient-danger hover-lift" data-aos="zoom-in" data-aos-delay="150">
                         <div class="card-body text-center">
                             <i class="bi bi-cloud-upload-fill stat-icon"></i>
-                            <div class="stat-value"><?= $stats['submissions'] ?></div>
+                            <div class="stat-value" data-count="<?= (int)$stats['submissions'] ?>">0</div>
                             <div class="stat-label">Submissions</div>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4 col-lg-2">
-                    <div class="card stat-card bg-gradient-info">
+                    <div class="card stat-card bg-gradient-info hover-lift" data-aos="zoom-in" data-aos-delay="200">
                         <div class="card-body text-center">
                             <i class="bi bi-star-fill stat-icon"></i>
-                            <div class="stat-value"><?= $stats['avg_score'] ?></div>
+                            <div class="stat-value" data-count="<?= (float)$stats['avg_score'] ?>" data-decimals="1">0.0</div>
                             <div class="stat-label">Avg Score</div>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4 col-lg-2">
-                    <div class="card stat-card bg-gradient-purple">
+                    <div class="card stat-card bg-gradient-purple hover-lift" data-aos="zoom-in" data-aos-delay="250">
                         <div class="card-body text-center">
                             <i class="bi bi-check2-square stat-icon"></i>
-                            <div class="stat-value"><?= $stats['attendance_pct'] ?>%</div>
+                            <div class="stat-value" data-count="<?= (int)$stats['attendance_pct'] ?>" data-suffix="%">0%</div>
                             <div class="stat-label">Attendance</div>
                         </div>
                     </div>
@@ -130,8 +130,8 @@ $topTeams = $stmt->fetchAll();
 
             <div class="row g-4">
                 <!-- Recent Announcements -->
-                <div class="col-lg-7">
-                    <div class="card content-card">
+                <div class="col-lg-7" data-aos="fade-up">
+                    <div class="card content-card hover-lift">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <span><i class="bi bi-megaphone-fill me-2"></i>Recent Announcements</span>
                             <a href="<?= BASE_URL ?>/admin/announcements.php" class="btn btn-sm btn-outline-primary">View All</a>
@@ -161,8 +161,8 @@ $topTeams = $stmt->fetchAll();
                 </div>
 
                 <!-- Top Teams -->
-                <div class="col-lg-5">
-                    <div class="card content-card">
+                <div class="col-lg-5" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card content-card hover-lift">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <span><i class="bi bi-trophy-fill me-2"></i>Top Teams</span>
                             <a href="<?= BASE_URL ?>/admin/leaderboard.php" class="btn btn-sm btn-outline-primary">Leaderboard</a>

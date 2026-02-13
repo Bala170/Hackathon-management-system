@@ -58,4 +58,52 @@
             }
         }
     });
+
+    // Initialize AOS (Animate On Scroll) for subtle page animations
+    document.addEventListener('DOMContentLoaded', function() {
+        if (window.AOS) {
+            AOS.init({
+                once: true,
+                duration: 700,
+                easing: 'ease-out-cubic',
+                offset: 60
+            });
+        }
+    });
+
+    // Count-up animation for elements with data-count
+    document.addEventListener('DOMContentLoaded', function() {
+        const counters = document.querySelectorAll('[data-count]');
+        if (!('IntersectionObserver' in window)) return;
+
+        const ease = function(t) { return 1 - Math.pow(1 - t, 3); };
+
+        const animateCount = function(el) {
+            const target = parseFloat(el.getAttribute('data-count')) || 0;
+            const decimals = parseInt(el.getAttribute('data-decimals') || '0', 10);
+            const suffix = el.getAttribute('data-suffix') || '';
+            const start = 0;
+            const duration = 1000;
+            const startTime = performance.now();
+
+            const step = function(now) {
+                const progress = Math.min((now - startTime) / duration, 1);
+                const val = start + (target - start) * ease(progress);
+                el.textContent = decimals > 0 ? val.toFixed(decimals) + suffix : Math.round(val) + suffix;
+                if (progress < 1) requestAnimationFrame(step);
+            };
+            requestAnimationFrame(step);
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    animateCount(entry.target);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.6 });
+
+        counters.forEach((el) => observer.observe(el));
+    });
 })();

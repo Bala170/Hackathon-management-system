@@ -20,9 +20,11 @@
 
 /* --- Global --- */
 body {
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
     background-color: #f0f2f5;
     padding-top: var(--hc-navbar-h);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* --- Login Page --- */
@@ -237,6 +239,48 @@ body {
 .announcement-card {
     border-left: 4px solid var(--hc-primary);
     transition: border-color 0.2s;
+}
+
+/* --- Professional Polishing & Animations --- */
+.hover-lift {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.hover-lift:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+}
+
+.hover-glow {
+    transition: box-shadow 0.25s ease;
+}
+.hover-glow:hover {
+    box-shadow: 0 0 0 0.3rem rgba(67, 97, 238, 0.25);
+}
+
+.btn-gradient {
+    background: linear-gradient(135deg, var(--hc-primary), var(--hc-accent));
+    color: #fff;
+    border: none;
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+.btn-gradient:hover { transform: translateY(-2px); filter: brightness(1.05); }
+.btn-gradient:active { transform: translateY(0); filter: brightness(0.98); }
+
+.section-title {
+    font-weight: 800;
+    letter-spacing: 0.4px;
+}
+
+/* AOS finetuning */
+[data-aos] {
+    will-change: transform, opacity;
+}
+
+/* Page header polish */
+.page-header {
+    padding: 0.5rem 0 1rem;
+    border-bottom: 1px solid #e9ecef;
+    margin-bottom: 1rem;
 }
 
 .announcement-card.unread {
