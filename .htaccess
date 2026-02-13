@@ -1,0 +1,31 @@
+# HackCommand – Directory Security
+
+# Deny access to sensitive directories
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Deny access to config directory
+    RewriteRule ^config/ - [F,L]
+
+    # Deny access to includes directory
+    RewriteRule ^includes/ - [F,L]
+
+    # Deny access to database directory
+    RewriteRule ^database/ - [F,L]
+</IfModule>
+
+# Block access to hidden files
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# Block access to SQL files
+<FilesMatch "\.(sql|md)$">
+    Require all denied
+</FilesMatch>
+
+# Disable directory listing
+Options -Indexes
+
+# Set default charset
+AddDefaultCharset UTF-8
