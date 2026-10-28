@@ -40,7 +40,27 @@ body {
     z-index: 1050;
     background: linear-gradient(90deg, var(--hc-dark) 0%, #16213e 100%) !important;
     box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    transition: background 0.25s ease, box-shadow 0.25s ease, backdrop-filter 0.25s ease;
 }
+
+.hc-navbar.navbar-scrolled {
+    background: rgba(15, 22, 40, 0.85) !important;
+    backdrop-filter: saturate(120%) blur(6px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+
+.navbar-brand .brand-gradient {
+    background: linear-gradient(90deg, var(--hc-primary), var(--hc-accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.navbar .nav-link {
+    transition: color 0.2s ease, opacity 0.2s ease;
+    opacity: 0.9;
+}
+.navbar .nav-link:hover { opacity: 1; color: #fff; }
 
 .notification-badge {
     font-size: 0.65rem;
@@ -143,6 +163,12 @@ body {
     border-radius: 12px;
     box-shadow: 0 2px 12px rgba(0,0,0,0.06);
     margin-bottom: 1.5rem;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.content-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
 }
 
 .content-card .card-header {

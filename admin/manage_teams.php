@@ -13,11 +13,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && validateCsrfToken()) {
 
     if ($action === 'add') {
         $teamName = trim($_POST['team_name'] ?? '');
+        $memberIds = $_POST['members'] ?? [];
         if ($teamName) {
             $stmt = $pdo->prepare("INSERT INTO teams (team_name) VALUES (?)");
             try {
                 $stmt->execute([$teamName]);
-                setFlash('success', 'Team created successfully.');
+                $newTeamId = $pdo->lastInsertId();
+                
+                // Assign selected members to the new team
+                if (!empty($memberIds) && is_array($memberIds)) {
+                    $updateStmt = $pdo->prepare("UPDATE users SET team_id = ? WHERE id = ? AND team_id IS NULL");
+                    foreach ($memberIds as $memberId) {
+                        $updateStmt->execute([$newTeamId, (int)$memberId]);
+                    }
+                }
+                
+                $memberCount = count($memberIds);
+                setFlash('success', "Team created successfully" . ($memberCount > 0 ? " with $memberCount member(s)." : "."));
             } catch (PDOException $e) {
                 setFlash('danger', 'Team name already exists.');
             }
@@ -25,11 +37,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && validateCsrfToken()) {
     } elseif ($action === 'edit') {
         $teamId   = (int) ($_POST['team_id'] ?? 0);
         $teamName = trim($_POST['team_name'] ?? '');
+        $newMemberIds = $_POST['new_members'] ?? [];
         if ($teamId && $teamName) {
             $stmt = $pdo->prepare("UPDATE teams SET team_name = ? WHERE id = ?");
             try {
                 $stmt->execute([$teamName, $teamId]);
-                setFlash('success', 'Team updated.');
+                
+                // Add new members if selected
+                $addedCount = 0;
+                if (!empty($newMemberIds) && is_array($newMemberIds)) {
+                    $updateStmt = $pdo->prepare("UPDATE users SET team_id = ? WHERE id = ? AND team_id IS NULL");
+                    foreach ($newMemberIds as $memberId) {
+                        $updateStmt->execute([$teamId, (int)$memberId]);
+                        $addedCount++;
+                    }
+                }
+                
+                setFlash('success', 'Team updated.' . ($addedCount > 0 ? " Added $addedCount new member(s)." : ''));
             } catch (PDOException $e) {
                 setFlash('danger', 'Error updating team.');
             }
@@ -174,21 +198,42 @@ $unassigned = $pdo->query("
 
 <!-- Add Team Modal -->
 <div class="modal fade" id="addTeamModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <form method="POST">
-                <div class="modal-header"><h5 class="modal-title"><i class="bi bi-plus-circle-fill me-2"></i>Create Team</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-plus-circle-fill me-2"></i>Create Team</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
                 <div class="modal-body">
                     <input type="hidden" name="csrf_token" value="<?= $csrf ?>">
                     <input type="hidden" name="action" value="add">
+                    
                     <div class="mb-3">
-                        <label class="form-label">Team Name</label>
-                        <input type="text" name="team_name" class="form-control" required>
+                        <label class="form-label fw-semibold">Team Name <span class="text-danger">*</span></label>
+                        <input type="text" name="team_name" class="form-control" placeholder="Enter team name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Add Team Members</label>
+                        <p class="text-muted small mb-2">Select students to add to this team (optional). Hold Ctrl/Cmd to select multiple.</p>
+                        <?php if (!empty($unassigned)): ?>
+                        <select name="members[]" class="form-select" multiple size="6" style="height: auto;">
+                            <?php foreach ($unassigned as $u): ?>
+                            <option value="<?= $u['id'] ?>"><?= sanitize($u['full_name']) ?> (<?= sanitize($u['email']) ?>)</option>
+                            <?php endforeach; ?>
+                        </select>
+                        <div class="form-text"><i class="bi bi-info-circle me-1"></i><?= count($unassigned) ?> unassigned student(s) available</div>
+                        <?php else: ?>
+                        <div class="alert alert-info py-2 mb-0">
+                            <i class="bi bi-info-circle me-1"></i>No unassigned students available. You can add members after creating the team.
+                        </div>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Create</button>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Create Team</button>
                 </div>
             </form>
         </div>
@@ -197,22 +242,48 @@ $unassigned = $pdo->query("
 
 <!-- Edit Team Modal -->
 <div class="modal fade" id="editTeamModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <form method="POST">
-                <div class="modal-header"><h5 class="modal-title"><i class="bi bi-pencil-fill me-2"></i>Edit Team</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-pencil-fill me-2"></i>Edit Team</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
                 <div class="modal-body">
                     <input type="hidden" name="csrf_token" value="<?= $csrf ?>">
                     <input type="hidden" name="action" value="edit">
                     <input type="hidden" name="team_id" id="editTeamId">
+                    
                     <div class="mb-3">
-                        <label class="form-label">Team Name</label>
+                        <label class="form-label fw-semibold">Team Name <span class="text-danger">*</span></label>
                         <input type="text" name="team_name" id="editTeamName" class="form-control" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Current Members</label>
+                        <div id="editTeamMembers" class="border rounded p-2" style="min-height: 60px; background: #f8f9fa;">
+                            <span class="text-muted small">Loading...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Add More Members</label>
+                        <?php if (!empty($unassigned)): ?>
+                        <select name="new_members[]" id="editNewMembers" class="form-select" multiple size="4" style="height: auto;">
+                            <?php foreach ($unassigned as $u): ?>
+                            <option value="<?= $u['id'] ?>"><?= sanitize($u['full_name']) ?> (<?= sanitize($u['email']) ?>)</option>
+                            <?php endforeach; ?>
+                        </select>
+                        <?php else: ?>
+                        <div class="alert alert-info py-2 mb-0 small">
+                            <i class="bi bi-info-circle me-1"></i>No unassigned students available.
+                        </div>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Save Changes</button>
                 </div>
             </form>
         </div>
@@ -220,10 +291,33 @@ $unassigned = $pdo->query("
 </div>
 
 <script>
+// Store team members data for edit modal
+const teamMembersData = <?= json_encode(array_reduce($teams, function($carry, $team) use ($pdo) {
+    $stmt = $pdo->prepare("SELECT id, full_name FROM users WHERE team_id = ?");
+    $stmt->execute([$team['id']]);
+    $carry[$team['id']] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return $carry;
+}, [])) ?>;
+
 document.getElementById('editTeamModal').addEventListener('show.bs.modal', function(e) {
     const btn = e.relatedTarget;
-    document.getElementById('editTeamId').value = btn.dataset.id;
+    const teamId = btn.dataset.id;
+    document.getElementById('editTeamId').value = teamId;
     document.getElementById('editTeamName').value = btn.dataset.name;
+    
+    // Display current members
+    const membersContainer = document.getElementById('editTeamMembers');
+    const members = teamMembersData[teamId] || [];
+    
+    if (members.length === 0) {
+        membersContainer.innerHTML = '<span class="text-muted small">No members assigned</span>';
+    } else {
+        membersContainer.innerHTML = members.map(m => 
+            `<span class="badge bg-primary me-1 mb-1 py-2 px-2">
+                <i class="bi bi-person-fill me-1"></i>${m.full_name}
+            </span>`
+        ).join('');
+    }
 });
 </script>
 

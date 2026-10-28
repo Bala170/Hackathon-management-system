@@ -22,11 +22,30 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['role'])) {
     <link href="<?= BASE_URL ?>/assets/css/style.css" rel="stylesheet">
     <style>
         .hero-section {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            background: #000;
             min-height: 100vh;
             display: flex;
             align-items: center;
             padding-top: 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+            z-index: 0;
+            opacity: 1;
+        }
+        .hero-section .container {
+            position: relative;
+            z-index: 2;
         }
         .hero-title { font-size: 3.5rem; font-weight: 800; }
         .hero-subtitle { font-size: 1.25rem; opacity: 0.85; }
@@ -46,12 +65,17 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['role'])) {
 </head>
 <body style="padding-top: 0;">
     <div class="hero-section text-white" data-aos="fade-in">
+        <!-- Background Video -->
+        <video class="hero-video" autoplay muted loop playsinline poster="<?= BASE_URL ?>/assets/img/hero-poster.jpg">
+            <source src="BG.mp4" type="video/mp4">
+            <!-- Fallback: black background shows if video fails -->
+        </video>
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6 mb-5 mb-lg-0" data-aos="fade-up">
                     <div class="d-flex align-items-center mb-3">
                         <i class="bi bi-terminal-fill display-5 me-3 text-primary"></i>
-                        <span class="badge bg-primary bg-opacity-25 text-primary-emphasis px-3 py-2 fs-6">v1.0</span>
+                        
                     </div>
                     <h1 class="hero-title mb-3">
                         <span class="glow-text">Hack</span>Command
@@ -103,11 +127,11 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['role'])) {
                     </div>
                 </div>
             </div>
-
-            <div class="text-center mt-5 pt-5">
-                <small class="text-white-50">&copy; 2026 HackCommand. Built for NeuroCode Hackathon.</small>
-            </div>
         </div>
+        <!-- Footer pinned to bottom -->
+        <footer class="position-absolute bottom-0 start-0 w-100 text-center py-3" style="z-index: 2;">
+            <small class="text-white-50">&copy; 2026 Agentic Bro. Built for NeuroCode Hackathon.</small>
+        </footer>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

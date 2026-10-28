@@ -37,7 +37,7 @@ $unreadCount = $userId ? getUnreadCount($pdo, $userId) : 0;
     <div class="container-fluid">
         <a class="navbar-brand d-flex align-items-center" href="<?= BASE_URL ?>/">
             <i class="bi bi-terminal-fill me-2"></i>
-            <strong>HackCommand</strong>
+            <strong class="brand-gradient">HackCommand</strong>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMobile">
             <span class="navbar-toggler-icon"></span>

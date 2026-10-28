@@ -71,6 +71,21 @@
         }
     });
 
+    // Navbar scrolled state toggle
+    document.addEventListener('DOMContentLoaded', function() {
+        const nav = document.querySelector('.hc-navbar');
+        if (!nav) return;
+        const onScroll = function() {
+            if (window.scrollY > 10) {
+                nav.classList.add('navbar-scrolled');
+            } else {
+                nav.classList.remove('navbar-scrolled');
+            }
+        };
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
+    });
+
     // Count-up animation for elements with data-count
     document.addEventListener('DOMContentLoaded', function() {
         const counters = document.querySelectorAll('[data-count]');
